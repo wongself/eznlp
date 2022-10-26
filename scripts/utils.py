@@ -4,16 +4,16 @@ import argparse
 import logging
 import re
 import json
-import spacy
-import jieba
+# import spacy
+# import jieba
 import random
 import time
 import numpy
-import sklearn.model_selection
+# import sklearn.model_selection
 import torch
-import allennlp.modules
+# import allennlp.modules
 import transformers
-import flair
+# import flair
 
 from eznlp.io import TabularIO, CategoryFolderIO, ConllIO, JsonIO, TextClsIO, KarpathyIO, BratIO, Src2TrgIO
 from eznlp.io import PostIO
@@ -48,7 +48,7 @@ def add_base_arguments(parser: argparse.ArgumentParser):
                              help="gradient clip (negative values are set to `None`)")
     
     group_train.add_argument('--optimizer', type=str, default='AdamW', 
-                             help="optimizer", choices=['AdamW', 'SGD', 'Adadelta', 'Adamax'])
+                             help="optimizer", choices=['AdamW', 'SGD', 'Adadelta', 'Adamax', 'RAdam'])
     group_train.add_argument('--lr', type=float, default=0.001, 
                              help="learning rate")
     group_train.add_argument('--finetune_lr', type=float, default=2e-5, 
@@ -110,8 +110,8 @@ def parse_to_args(parser: argparse.ArgumentParser):
 
 
 
-spacy_nlp_en = spacy.load("en_core_web_sm", disable=['tagger', 'parser', 'ner'])
-spacy_nlp_de = spacy.load("de_core_news_sm", disable=['tagger', 'parser', 'ner'])
+# spacy_nlp_en = spacy.load("en_core_web_sm", disable=['tagger', 'parser', 'ner'])
+# spacy_nlp_de = spacy.load("de_core_news_sm", disable=['tagger', 'parser', 'ner'])
 
 
 dataset2language = {'conll2003': 'English', 
@@ -374,19 +374,19 @@ def load_data(args: argparse.Namespace):
         dev_data   = tabular_io.read("data/Tang2015/yelp-2013-seg-20-20.dev.ss")
         test_data  = tabular_io.read("data/Tang2015/yelp-2013-seg-20-20.test.ss")
         
-    elif args.dataset == 'imdb':
-        folder_io = CategoryFolderIO(categories=["pos", "neg"], mapping={"<br />": "\n"}, tokenize_callback=spacy_nlp_en, encoding='utf-8', verbose=args.log_terminal, 
-                                     case_mode='lower', number_mode='None')
-        train_data = folder_io.read("data/imdb/train")
-        test_data  = folder_io.read("data/imdb/test")
-        train_data, dev_data = sklearn.model_selection.train_test_split(train_data, test_size=0.2, random_state=args.seed)
+    # elif args.dataset == 'imdb':
+    #     folder_io = CategoryFolderIO(categories=["pos", "neg"], mapping={"<br />": "\n"}, tokenize_callback=spacy_nlp_en, encoding='utf-8', verbose=args.log_terminal, 
+    #                                  case_mode='lower', number_mode='None')
+    #     train_data = folder_io.read("data/imdb/train")
+    #     test_data  = folder_io.read("data/imdb/test")
+    #     train_data, dev_data = sklearn.model_selection.train_test_split(train_data, test_size=0.2, random_state=args.seed)
         
-    elif args.dataset == 'yelp_full':
-        tabular_io = TabularIO(text_col_id=1, label_col_id=0, sep=",", mapping={"\\n": "\n", '\\"': '"'}, tokenize_callback=spacy_nlp_en, verbose=args.log_terminal, 
-                               case_mode='Lower', number_mode='None')
-        train_data = tabular_io.read("data/yelp_review_full/train.csv")
-        test_data  = tabular_io.read("data/yelp_review_full/test.csv")
-        train_data, dev_data = sklearn.model_selection.train_test_split(train_data, test_size=0.1, random_state=args.seed)
+    # elif args.dataset == 'yelp_full':
+    #     tabular_io = TabularIO(text_col_id=1, label_col_id=0, sep=",", mapping={"\\n": "\n", '\\"': '"'}, tokenize_callback=spacy_nlp_en, verbose=args.log_terminal, 
+    #                            case_mode='Lower', number_mode='None')
+    #     train_data = tabular_io.read("data/yelp_review_full/train.csv")
+    #     test_data  = tabular_io.read("data/yelp_review_full/test.csv")
+    #     train_data, dev_data = sklearn.model_selection.train_test_split(train_data, test_size=0.1, random_state=args.seed)
         
     elif args.dataset == 'ChnSentiCorp':
         tabular_io = TabularIO(text_col_id=1, label_col_id=0, sep='\t', header=0, tokenize_callback=jieba.cut, encoding='utf-8', verbose=args.log_terminal, 
@@ -438,12 +438,12 @@ def load_data(args: argparse.Namespace):
         test_data  = io.read("data/cblue/KUAKE-QQR/KUAKE-QQR_test.json")
         
         
-    elif args.dataset == 'multi30k':
-        io = Src2TrgIO(tokenize_callback=spacy_nlp_de, trg_tokenize_callback=spacy_nlp_en, encoding='utf-8', verbose=args.log_terminal, 
-                       case_mode='Lower', number_mode='None')
-        train_data = io.read("data/multi30k/train.en", "data/multi30k/train.de")
-        dev_data   = io.read("data/multi30k/val.en", "data/multi30k/val.de")
-        test_data  = io.read("data/multi30k/test2016.en", "data/multi30k/test2016.de")
+    # elif args.dataset == 'multi30k':
+    #     io = Src2TrgIO(tokenize_callback=spacy_nlp_de, trg_tokenize_callback=spacy_nlp_en, encoding='utf-8', verbose=args.log_terminal, 
+    #                    case_mode='Lower', number_mode='None')
+    #     train_data = io.read("data/multi30k/train.en", "data/multi30k/train.de")
+    #     dev_data   = io.read("data/multi30k/val.en", "data/multi30k/val.de")
+    #     test_data  = io.read("data/multi30k/test2016.en", "data/multi30k/test2016.de")
         
     elif args.dataset == 'iwslt14':
         io = Src2TrgIO(tokenize_callback=None, trg_tokenize_callback=None, encoding='utf-8', case_mode='Lower', number_mode='None')
@@ -471,16 +471,16 @@ def load_data(args: argparse.Namespace):
 
 
 def load_pretrained(pretrained_str, args: argparse.Namespace, cased=False):
-    if pretrained_str.lower() == 'elmo':
-        return allennlp.modules.Elmo(options_file="assets/allennlp/elmo_2x4096_512_2048cnn_2xhighway_options.json", 
-                                     weight_file="assets/allennlp/elmo_2x4096_512_2048cnn_2xhighway_weights.hdf5", 
-                                     num_output_representations=1)
+    # if pretrained_str.lower() == 'elmo':
+    #     return allennlp.modules.Elmo(options_file="assets/allennlp/elmo_2x4096_512_2048cnn_2xhighway_options.json", 
+    #                                  weight_file="assets/allennlp/elmo_2x4096_512_2048cnn_2xhighway_weights.hdf5", 
+    #                                  num_output_representations=1)
         
-    elif pretrained_str.lower() == 'flair':
-        return (flair.models.LanguageModel.load_language_model("assets/flair/news-forward-0.4.1.pt"), 
-                flair.models.LanguageModel.load_language_model("assets/flair/news-backward-0.4.1.pt"))
+    # elif pretrained_str.lower() == 'flair':
+    #     return (flair.models.LanguageModel.load_language_model("assets/flair/news-forward-0.4.1.pt"), 
+    #             flair.models.LanguageModel.load_language_model("assets/flair/news-backward-0.4.1.pt"))
         
-    elif args.language.lower() == 'english':
+    if args.language.lower() == 'english':
         if pretrained_str.lower().startswith('bert'):
             if 'wwm' in pretrained_str.lower():
                 PATH = "assets/transformers/bert-large-cased-whole-word-masking" if cased else "assets/transformers/bert-large-uncased-whole-word-masking"
@@ -522,8 +522,8 @@ def load_pretrained(pretrained_str, args: argparse.Namespace, cased=False):
                 PATH = "assets/transformers/scideberta-cs"
             else:
                 PATH = "assets/transformers/scideberta"
-            return (transformers.DebertaForMaskedLM.from_pretrained(PATH, hidden_dropout_prob=args.bert_drop_rate, attention_probs_dropout_prob=args.bert_drop_rate), 
-                    transformers.DebertaTokenizer.from_pretrained(PATH, add_prefix_space=True))
+            return (transformers.AutoModelForMaskedLM.from_pretrained(PATH, hidden_dropout_prob=args.bert_drop_rate, attention_probs_dropout_prob=args.bert_drop_rate), 
+                    transformers.AutoTokenizer.from_pretrained(PATH, add_prefix_space=True))
 
         elif pretrained_str.lower().startswith('albert'):
             size = re.search("x*(base|large)", pretrained_str.lower())

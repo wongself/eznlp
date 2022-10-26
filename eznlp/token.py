@@ -4,9 +4,9 @@ from collections import OrderedDict
 from functools import cached_property
 import string
 import re
-import hanziconv
-import spacy
-import jieba
+# import hanziconv
+# import spacy
+# import jieba
 import numpy
 
 
@@ -208,8 +208,7 @@ class Token(object):
             
         pipeline_normalizer = _pipeline(_case_normalizers[case_mode.lower()], 
                                         _number_normalizers[number_mode.lower()], 
-                                        lambda x: Full2Half.full2half(x) if to_half else x, 
-                                        lambda x: hanziconv.HanziConv.toSimplified(x) if to_zh_simplified else x)
+                                        lambda x: Full2Half.full2half(x) if to_half else x)
         self.text = pipeline_normalizer(self.raw_text)
         if callable(post_text_normalizer):
             self.text = post_text_normalizer(self.text)
@@ -368,7 +367,7 @@ class TokenSequence(object):
     def _assert_for_softwords(self, tokenize_callback):
         assert self.token_sep == ""
         assert hasattr(tokenize_callback, '__self__')
-        assert isinstance(tokenize_callback.__self__, (jieba.Tokenizer, LexiconTokenizer))
+        assert isinstance(tokenize_callback.__self__, LexiconTokenizer)
         assert tokenize_callback.__name__.startswith('tokenize')
         
         
@@ -488,21 +487,20 @@ class TokenSequence(object):
         tokenize_callback: `None`, str or callable
             (1) `None`, "space": split text by space. 
             (2) "char": split text into characters. 
-            (3) spacy.language.Language, jieba.Tokenizer.cut, jieba.Tokenizer.tokenize: split text by given tokenize method. 
         """
         if tokenize_callback is None or (isinstance(tokenize_callback, str) and tokenize_callback.lower().startswith('space')):
             token_list = [Token(tok_text, **kwargs) for tok_text in raw_text.split()]
         elif isinstance(tokenize_callback, str) and tokenize_callback.lower().startswith('char'):
             token_list = [Token(tok_text, start=k, end=k+1, **kwargs) for k, tok_text in enumerate(raw_text)]
-        elif isinstance(tokenize_callback, spacy.language.Language):
-            token_list = [Token(tok.text, start=tok.idx, end=tok.idx+len(tok.text), **kwargs) for tok in tokenize_callback(raw_text)]
-        elif hasattr(tokenize_callback, '__self__') and isinstance(tokenize_callback.__self__, jieba.Tokenizer):
-            if tokenize_callback.__name__.startswith('tokenize'):
-                token_list = [Token(tok_text, start=tok_start, end=tok_end, **kwargs) for tok_text, tok_start, tok_end in tokenize_callback(raw_text)]
-            elif tokenize_callback.__name__.startswith('cut'):
-                token_list = [Token(tok_text, **kwargs) for tok_text in tokenize_callback(raw_text)]
-            else:
-                raise ValueError(f"Invalid method of `jieba.Tokenizer`: {tokenize_callback}")
+        # elif isinstance(tokenize_callback, spacy.language.Language):
+        #     token_list = [Token(tok.text, start=tok.idx, end=tok.idx+len(tok.text), **kwargs) for tok in tokenize_callback(raw_text)]
+        # elif hasattr(tokenize_callback, '__self__') and isinstance(tokenize_callback.__self__, jieba.Tokenizer):
+        #     if tokenize_callback.__name__.startswith('tokenize'):
+        #         token_list = [Token(tok_text, start=tok_start, end=tok_end, **kwargs) for tok_text, tok_start, tok_end in tokenize_callback(raw_text)]
+        #     elif tokenize_callback.__name__.startswith('cut'):
+        #         token_list = [Token(tok_text, **kwargs) for tok_text in tokenize_callback(raw_text)]
+        #     else:
+        #         raise ValueError(f"Invalid method of `jieba.Tokenizer`: {tokenize_callback}")
         else:
             raise ValueError(f"Invalid `tokenize_callback`: {tokenize_callback}")
         

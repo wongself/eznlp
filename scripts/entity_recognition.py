@@ -14,7 +14,8 @@ from eznlp.token import LexiconTokenizer
 from eznlp.dataset import Dataset
 from eznlp.config import ConfigDict
 from eznlp.model import OneHotConfig, MultiHotConfig, EncoderConfig, CharConfig, SoftLexiconConfig
-from eznlp.model import ELMoConfig, BertLikeConfig, FlairConfig
+# from eznlp.model import ELMoConfig, BertLikeConfig, FlairConfig
+from eznlp.model import BertLikeConfig
 from eznlp.model import SequenceTaggingDecoderConfig, SpanClassificationDecoderConfig, BoundarySelectionDecoderConfig
 from eznlp.model import ExtractorConfig
 from eznlp.model.bert_like import segment_uniformly_for_bert_like
@@ -125,18 +126,18 @@ def collect_IE_assembly_config(args: argparse.Namespace):
     else:
         interm2_config = None
     
-    if args.language.lower() == 'english' and args.use_elmo:
-        elmo_config = ELMoConfig(elmo=load_pretrained('elmo'))
-    else:
-        elmo_config = None
+    # if args.language.lower() == 'english' and args.use_elmo:
+    #     elmo_config = ELMoConfig(elmo=load_pretrained('elmo'))
+    # else:
+    elmo_config = None
     
-    if args.language.lower() == 'english' and args.use_flair:
-        flair_fw_lm, flair_bw_lm = load_pretrained('flair')
-        flair_fw_config, flair_bw_config = FlairConfig(flair_lm=flair_fw_lm), FlairConfig(flair_lm=flair_bw_lm)
-        if interm2_config is not None:
-            interm2_config.in_proj = True
-    else:
-        flair_fw_config, flair_bw_config = None, None
+    # if args.language.lower() == 'english' and args.use_flair:
+    #     flair_fw_lm, flair_bw_lm = load_pretrained('flair')
+    #     flair_fw_config, flair_bw_config = FlairConfig(flair_lm=flair_fw_lm), FlairConfig(flair_lm=flair_bw_lm)
+    #     if interm2_config is not None:
+    #         interm2_config.in_proj = True
+    # else:
+    flair_fw_config, flair_bw_config = None, None
     
     if args.bert_arch.lower() != 'none':
         # Cased tokenizer for NER task
