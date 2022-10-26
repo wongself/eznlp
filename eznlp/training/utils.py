@@ -134,7 +134,7 @@ def count_params(model_or_params: Union[torch.nn.Module, torch.nn.Parameter, Lis
         return num_trainable + num_frozen
 
 
-def auto_device(min_memory: int=2048):
+def auto_device(min_memory: int=10240):
     """
     https://stackoverflow.com/questions/59567226/how-to-programmatically-determine-available-gpu-memory-with-tensorflow
     """

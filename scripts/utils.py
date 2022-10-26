@@ -490,7 +490,17 @@ def load_pretrained(pretrained_str, args: argparse.Namespace, cased=False):
                 PATH = "assets/transformers/bert-large-cased" if cased else "assets/transformers/bert-large-uncased"
             return (transformers.BertModel.from_pretrained(PATH, hidden_dropout_prob=args.bert_drop_rate, attention_probs_dropout_prob=args.bert_drop_rate), 
                     transformers.BertTokenizer.from_pretrained(PATH))
-            
+
+        elif pretrained_str.lower().startswith('scibert'):
+            PATH = "assets/transformers/scibert_scivocab_uncased"
+            return (transformers.BertModel.from_pretrained(PATH, hidden_dropout_prob=args.bert_drop_rate, attention_probs_dropout_prob=args.bert_drop_rate), 
+                    transformers.BertTokenizer.from_pretrained(PATH))
+   
+        elif pretrained_str.lower().startswith('biobert'):
+            PATH = "assets/transformers/biobert-base-cased-v1.2"
+            return (transformers.BertModel.from_pretrained(PATH, hidden_dropout_prob=args.bert_drop_rate, attention_probs_dropout_prob=args.bert_drop_rate), 
+                    transformers.BertTokenizer.from_pretrained(PATH))
+
         elif pretrained_str.lower().startswith('roberta'):
             if 'base' in pretrained_str.lower():
                 PATH = "assets/transformers/roberta-base"
@@ -498,7 +508,23 @@ def load_pretrained(pretrained_str, args: argparse.Namespace, cased=False):
                 PATH = "assets/transformers/roberta-large"
             return (transformers.RobertaModel.from_pretrained(PATH, hidden_dropout_prob=args.bert_drop_rate, attention_probs_dropout_prob=args.bert_drop_rate), 
                     transformers.RobertaTokenizer.from_pretrained(PATH, add_prefix_space=True))
-            
+
+        elif pretrained_str.lower().startswith('deberta'):
+            if 'base' in pretrained_str.lower():
+                PATH = "assets/transformers/deberta-v3-base"
+            elif 'large' in pretrained_str.lower():
+                PATH = "assets/transformers/deberta-v3-large"
+            return (transformers.DebertaV2Model.from_pretrained(PATH, hidden_dropout_prob=args.bert_drop_rate, attention_probs_dropout_prob=args.bert_drop_rate), 
+                    transformers.DebertaV2Tokenizer.from_pretrained(PATH, add_prefix_space=True))
+
+        elif pretrained_str.lower().startswith('scideberta'):
+            if 'cs' in pretrained_str.lower():
+                PATH = "assets/transformers/scideberta-cs"
+            else:
+                PATH = "assets/transformers/scideberta"
+            return (transformers.DebertaForMaskedLM.from_pretrained(PATH, hidden_dropout_prob=args.bert_drop_rate, attention_probs_dropout_prob=args.bert_drop_rate), 
+                    transformers.DebertaTokenizer.from_pretrained(PATH, add_prefix_space=True))
+
         elif pretrained_str.lower().startswith('albert'):
             size = re.search("x*(base|large)", pretrained_str.lower())
             if size is not None:
