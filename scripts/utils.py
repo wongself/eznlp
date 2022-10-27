@@ -36,6 +36,8 @@ def add_base_arguments(parser: argparse.ArgumentParser):
     group_train = parser.add_argument_group('training hyper-parameters')
     group_train.add_argument('--seed', type=int, default=515, 
                              help="random seed")
+    group_train.add_argument('--gpu_id', type=int, default=-1, 
+                             help="id of gpu")
     group_train.add_argument('--use_amp', default=False, action='store_true', 
                              help="whether to use amp")
     group_train.add_argument('--train_with_dev', default=False, action='store_true', 

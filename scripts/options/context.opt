@@ -1,5 +1,5 @@
 --optimizer
-RAdam
+AdamW
 --scheduler
 LinearDecayWithWarmup
 --emb_dim
@@ -7,7 +7,9 @@ LinearDecayWithWarmup
 --char_arch
 None
 --bert_arch
-scideberta
+scideberta-cs
+--finetune_lr
+5e-05
 --num_epochs
 50
 --batch_size
@@ -16,8 +18,10 @@ scideberta
 SciERC
 --ck_decoder
 boundary_selection
---sb_epsilon
-0.2
---sb_size
+--fl_gamma
 2
+--sb_epsilon
+0.3
+--sb_size
+1
 --use_interm2
